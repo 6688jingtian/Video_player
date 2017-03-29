@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="utf-8" />
+		<title>播放器</title>
+		<style>
+			#video{height: 500px; width: 600px;  margin: 60px auto;}
+		    .content{height: 400px; width: 600px; background: url(img/3.jpg);}
+		    .progress{height: 30px; width: 600px; line-height: 30px;margin-top: 10px;}
+		    .curtime,.alltime{width: 70px; height: 30px;}
+		    .pro{width: 460px; height: 30px; background:#ccc ;border-radius: 15px;}
+		    .progress div{float: left;}
+		    .controls div{height: 66px; width: 67px; background: url(img/icon.png); float: left;
+		    margin: 16px; cursor: pointer;}
+		    #prev{background-position: -413px -210px;}
+		    #play{background-position: -250px -120px;}
+		    #next{background-position: -250px -210px;}
+		    #stop{background-position: -574px -120px;}
+		    #volume{background-position: -574px -210px;}
+		    #fullscreen{background: url(img/fullscreen.png);}
+		</style>
+	</head>
+	<body>
+		<div id="video">	
+			<div class="content">
+				<video id="vid1" width="600px" height="400px" src="video/0.mp4">对不起！您的浏览器版本过低</video>
+			</div>
+			<div
+			<div class="progress">
+				<div class="curtime">00:00:00</div>
+			    <div class="pro"></div>
+			    <div class="alltime">00:00:00</div>
+			</div>
+			<div class="controls">
+				<div id="prev"></div>
+				<div id="play"></div>
+				<div id="next"></div>
+				<div id="stop"></div>
+				<div id="volume"></div>
+				<div id="fullscreen"></div>
+			</div>
+		</div>
+		<script>
+				var oVideo=document.getElementById('vid1');
+				var oPlay=document.getElementById('play');
+				var oPrev=document.getElementById('prev');
+				var oNext=document.getElementById('next');
+				var oFull=document.getElementById('fullscreen');
+				var oStop=document.getElementById('stop');
+				var oVol=document.getElementById('volume');
+				var a=true;
+				var i=0;
+				oPlay.onclick=function()
+				{
+					if(a)
+					{
+						oVideo.play();
+						this.style.backgroundPosition="-413px -120px" ;
+					}
+					else
+					{
+						oVideo.pause();
+						this.style.backgroundPosition="-250px -120px" ;
+					}
+					a=!a;
+				};
+				oPrev.onclick=function()
+				{					
+					i--;
+					if(i<0)
+					{
+						i=2;
+					}
+					 
+					oVideo.src='video/'+i+'.mp4';
+					oPlay.style.backgroundPosition="-413px -120px" ;
+					oVideo.play();
+					a=false;
+				};
+				oNext.onclick=function()
+				{
+					i++;
+					if(i>2)
+					{
+						i=0;
+					}
+					oVideo.src='video/'+i+'.mp4';
+					oPlay.style.backgroundPosition="-413px -120px" ;				
+					oVideo.play();
+					a=false;
+				};
+				oStop.onclick=function()
+				{
+					oVideo.pause();
+					oPlay.style.backgroundPosition="-250px -120px" ;
+					a=true;
+				};
+				oFull.onclick=function()//全屏
+				{
+					if(oVideo.mozRequestFullScreen)
+					{
+						oVideo.mozRequestFullScreen();
+						
+					}
+					else
+					{
+						oVideo.webkitRequestFullScreen();
+						//oVideo.background='#000';
+					}
+				};
+		</script>
+	</body>
+</html>
