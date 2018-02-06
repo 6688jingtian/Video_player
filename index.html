@@ -4,11 +4,12 @@
 		<meta charset="utf-8" />
 		<title>播放器</title>
 		<style>
+			*{margin: 0;padding: 0;}
 			#video{height: 500px; width: 600px;  margin: 60px auto;}
 		    .content{height: 400px; width: 600px; background: url(img/3.jpg);}
-		    .progress{height: 30px; width: 600px; line-height: 30px;margin-top: 10px;}
+		    .progress{height: 30px; width: 600px; line-height: 30px;margin-top: 10px;text-align: center;}
 		    .curtime,.alltime{width: 70px; height: 30px;}
-		    .pro{width: 460px; height: 30px; background:#ccc ;border-radius: 15px;}
+		    .pro{width: 460px; height: 30px; background:#ccc ;border-radius: 15px;position: relative;}
 		    .progress div{float: left;}
 		    .controls div{height: 66px; width: 67px; background: url(img/icon.png); float: left;
 		    margin: 16px; cursor: pointer;}
@@ -17,7 +18,25 @@
 		    #next{background-position: -250px -210px;}
 		    #stop{background-position: -574px -120px;}
 		    #volume{background-position: -574px -210px;}
-		    #fullscreen{background: url(img/fullscreen.png);}
+		    #fullscreen{background: url(img/fullscreen.png);}		
+		    .move
+		    {
+		    	background: pink;
+		    	position: absolute;
+		    	height:30px;
+		    	border-radius: 15px;
+		    	top: 0;
+		    	left: 0;
+		    }
+		    .head
+		    {
+		    	height: 30px;
+		    	width: 30px;
+		    	border-radius: 15px;
+		    	background: greenyellow;
+		    	position: absolute;
+		        cursor: pointer;
+		    }
 		</style>
 	</head>
 	<body>
@@ -28,7 +47,10 @@
 			<div
 			<div class="progress">
 				<div class="curtime">00:00:00</div>
-			    <div class="pro"></div>
+			    <div class="pro">
+			    	<div class="move"></div>
+			    	<div class="head"></div>
+			    </div>
 			    <div class="alltime">00:00:00</div>
 			</div>
 			<div class="controls">
@@ -48,8 +70,44 @@
 				var oFull=document.getElementById('fullscreen');
 				var oStop=document.getElementById('stop');
 				var oVol=document.getElementById('volume');
+				var oPro=document.getElementsByClassName('pro')[0];
+				var oPrograss=document.getElementsByClassName('progress')[0];
+				var oCurtime=document.getElementsByClassName('curtime')[0];
+				var oAlltime=document.getElementsByClassName('alltime')[0];
+				var oMove=document.getElementsByClassName('move')[0];
+				var oHead=document.getElementsByClassName('head')[0];
 				var a=true;
 				var i=0;
+				function nowTime()
+				{
+					oCurtime.innerHTML=time(oVideo.currentTime);
+					var per=oVideo.currentTime/oVideo.duration;
+					oHead.style.left=per*(oPro.offsetWidth-oHead.offsetWidth)+'px';
+					oMove.style.width=per*(oPro.offsetWidth-30)+30+'px';
+					oAlltime.innerHTML=time(oVideo.duration);
+				};
+				function time(cTime)//转换时间格式
+				{
+					cTime=parseInt(cTime);
+				    var h=zero(Math.floor(cTime/3600));
+				    var m=zero(Math.floor(cTime%3600/60));
+				    var s=zero(Math.floor(cTime%60));
+				    return h+':'+m+':'+s;
+				};
+				function zero(n)//时间补零
+				{
+					if(n<10)
+					{
+						return '0'+n;
+					}
+					else
+					{
+						return ' '+n;
+					}
+				};
+				oVideo.addEventListener('timeupdate',function(){//添加事件监听，实时监听时间
+					nowTime();
+				});
 				oPlay.onclick=function()
 				{
 					if(a)
@@ -71,10 +129,10 @@
 					{
 						i=2;
 					}
-					 
 					oVideo.src='video/'+i+'.mp4';
 					oPlay.style.backgroundPosition="-413px -120px" ;
 					oVideo.play();
+					
 					a=false;
 				};
 				oNext.onclick=function()
@@ -100,12 +158,43 @@
 					if(oVideo.mozRequestFullScreen)
 					{
 						oVideo.mozRequestFullScreen();
-						
 					}
 					else
 					{
 						oVideo.webkitRequestFullScreen();
 						//oVideo.background='#000';
+					}
+				};
+				oVol.onclick=function()
+				{
+				var	volume=10;
+				};
+				oHead.onmousedown=function(ev)
+				{
+					var ev=ev||window.event;	
+					var x=ev.clientX-this.offsetLeft;
+					document.onmousemove=function(ev)
+					{
+						var x1=ev.clientX-x;
+						if(x1<0)
+						{
+							x1=0;
+						}
+						else
+						if(x1>oPro.offsetWidth-oHead.offsetWidth)
+						{
+							x1=oPro.offsetWidth-oHead.offsetWidth;
+						}
+						oHead.style.left=x1+'px';
+						oMove.style.width=x1+30+'px';
+						var pern=x1/(oPro.offsetWidth-oHead.offsetWidth);
+						oVideo.currentTime=pern*oVideo.duration;
+						nowTime();
+					};
+					document.onmouseup=function()
+					{
+						this.onmousemove=null;
+						this.onmouseup=null;
 					}
 				};
 		</script>
